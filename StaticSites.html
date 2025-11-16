@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komunitas StaticSites</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .post-image {
+            max-height: 400px;
+            object-fit: contain;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fab fa-html5 text-2xl"></i>
+                <h1 class="text-xl font-bold">Komunitas StaticSites</h1>
+            </div>
+            <div class="flex space-x-4">
+                <button id="home-btn" class="nav-btn px-3 py-2 rounded-lg hover:bg-white/20 transition">
+                    <i class="fas fa-home mr-1"></i> Beranda
+                </button>
+                <button id="profile-btn" class="nav-btn px-3 py-2 rounded-lg hover:bg-white/20 transition hidden">
+                    <i class="fas fa-user mr-1"></i> Profil
+                </button>
+                <button id="login-btn" class="nav-btn px-3 py-2 rounded-lg hover:bg-white/20 transition">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Masuk
+                </button>
+                <button id="logout-btn" class="nav-btn px-3 py-2 rounded-lg hover:bg-white/20 transition hidden">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Keluar
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8" id="main-content">
+        <!-- Login Page (Default) -->
+        <div id="login-page" class="fade-in max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
+            <div class="text-center mb-6">
+                <i class="fab fa-html5 text-5xl text-blue-600 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800">Masuk ke Komunitas StaticSites</h2>
+                <p class="text-gray-600 mt-2">Bergabung dengan komunitas pengembang web</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                    <input type="text" id="username" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button type="submit" 
+                        class="w-full gradient-bg text-white py-2 rounded-lg font-medium hover:opacity-90 transition">
+                    Masuk / Daftar
+                </button>
+            </form>
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <p>Data akan disimpan secara lokal di browser Anda</p>
+            </div>
+        </div>
+
+        <!-- Home Page -->
+        <div id="home-page" class="fade-in hidden">
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Feed -->
+                <div class="md:w-2/3">
+                    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Buat Postingan Baru</h2>
+                        <form id="post-form">
+                            <div class="mb-4">
+                                <textarea id="post-content" rows="3" placeholder="Apa yang ingin Anda bagikan?" 
+                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label for="post-image" class="block text-sm font-medium text-gray-700 mb-1">Gambar (opsional)</label>
+                                <input type="file" id="post-image" accept="image/*" 
+                                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            </div>
+                            <button type="submit" 
+                                    class="gradient-bg text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition">
+                                <i class="fas fa-paper-plane mr-2"></i> Posting
+                            </button>
+                        </form>
+                    </div>
+
+                    <div id="posts-container" class="space-y-6">
+                        <!-- Posts will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="md:w-1/3">
+                    <div class="bg-white rounded-xl shadow-md p-6 sticky top-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Anggota Aktif</h3>
+                        <div id="active-users" class="space-y-3">
+                            <!-- Active users will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="profile-page" class="fade-in hidden max-w-2xl mx-auto">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <!-- Profile Header -->
+                <div class="gradient-bg p-6 text-white">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-user text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 id="profile-username" class="text-2xl font-bold"></h2>
+                            <p id="profile-join-date" class="text-white/80"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Stats -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800" id="profile-posts-count">0</p>
+                            <p class="text-gray-600">Postingan</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800" id="profile-likes-count">0</p>
+                            <p class="text-gray-600">Suka Diterima</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800" id="profile-comments-count">0</p>
+                            <p class="text-gray-600">Komentar</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Posts -->
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Postingan Saya</h3>
+                    <div id="user-posts-container" class="space-y-4">
+                        <!-- User posts will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for comments -->
+    <div id="comments-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">Komentar</h3>
+                <button id="close-comments-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4 overflow-y-auto max-h-[60vh]" id="comments-container">
+                <!-- Comments will be loaded here -->
+            </div>
+            <div class="p-4 border-t border-gray-200">
+                <form id="comment-form" class="flex space-x-2">
+                    <input type="text" id="comment-input" placeholder="Tulis komentar..." 
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <button type="submit" class="gradient-bg text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        const Storage = {
+            // Get data from localStorage
+            get: (key) => {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            },
+            
+            // Set data to localStorage
+            set: (key, data) => {
+                localStorage.setItem(key, JSON.stringify(data));
+            },
+            
+            // Initialize data if not exists
+            init: () => {
+                if (!Storage.get('users')) {
+                    Storage.set('users', []);
+                }
+                if (!Storage.get('posts')) {
+                    Storage.set('posts', []);
+                }
+                if (!Storage.get('currentUser')) {
+                    Storage.set('currentUser', null);
+                }
+            }
+        };
+
+        // User management
+        const User = {
+            // Get current user
+            current: () => {
+                return Storage.get('currentUser');
+            },
+            
+            // Login user
+            login: (username) => {
+                const users = Storage.get('users');
+                let user = users.find(u => u.username === username);
+                
+                // Create new user if doesn't exist
+                if (!user) {
+                    user = {
+                        id: Date.now().toString(),
+                        username,
+                        joinDate: new Date().toISOString(),
+                        posts: [],
+                        likes: [],
+                        comments: []
+                    };
+                    users.push(user);
+                    Storage.set('users', users);
+                }
+                
+                Storage.set('currentUser', user);
+                return user;
+            },
+            
+            // Logout user
+            logout: () => {
+                Storage.set('currentUser', null);
+            },
+            
+            // Update user data
+            update: (userData) => {
+                const users = Storage.get('users');
+                const index = users.findIndex(u => u.id === userData.id);
+                if (index !== -1) {
+                    users[index] = userData;
+                    Storage.set('users', users);
+                    
+                    // Update current user if it's the same user
+                    const currentUser = Storage.get('currentUser');
+                    if (currentUser && currentUser.id === userData.id) {
+                        Storage.set('currentUser', userData);
+                    }
+                }
+            }
+        };
+
+        // Post management
+        const Post = {
+            // Create a new post
+            create: (content, image = null) => {
+                const currentUser = User.current();
+                if (!currentUser) return null;
+                
+                const posts = Storage.get('posts');
+                const post = {
+                    id: Date.now().toString(),
+                    userId: currentUser.id,
+                    username: currentUser.username,
+                    content,
+                    image,
+                    timestamp: new Date().toISOString(),
+                    likes: [],
+                    comments: []
+                };
+                
+                posts.unshift(post);
+                Storage.set('posts', posts);
+                
+                // Add post to user's posts
+                currentUser.posts.push(post.id);
+                User.update(currentUser);
+                
+                return post;
+            },
+            
+            // Get all posts
+            getAll: () => {
+                return Storage.get('posts') || [];
+            },
+            
+            // Get posts by user
+            getByUser: (userId) => {
+                const posts = Post.getAll();
+                return posts.filter(post => post.userId === userId);
+            },
+            
+            // Like a post
+            like: (postId) => {
+                const currentUser = User.current();
+                if (!currentUser) return;
+                
+                const posts = Post.getAll();
+                const postIndex = posts.findIndex(p => p.id === postId);
+                
+                if (postIndex !== -1) {
+                    const post = posts[postIndex];
+                    const likeIndex = post.likes.indexOf(currentUser.id);
+                    
+                    if (likeIndex === -1) {
+                        // Add like
+                        post.likes.push(currentUser.id);
+                        currentUser.likes.push(postId);
+                    } else {
+                        // Remove like
+                        post.likes.splice(likeIndex, 1);
+                        const userLikeIndex = currentUser.likes.indexOf(postId);
+                        if (userLikeIndex !== -1) {
+                            currentUser.likes.splice(userLikeIndex, 1);
+                        }
+                    }
+                    
+                    Storage.set('posts', posts);
+                    User.update(currentUser);
+                    
+                    return post;
+                }
+            },
+            
+            // Add comment to post
+            addComment: (postId, content) => {
+                const currentUser = User.current();
+                if (!currentUser) return null;
+                
+                const posts = Post.getAll();
+                const postIndex = posts.findIndex(p => p.id === postId);
+                
+                if (postIndex !== -1) {
+                    const comment = {
+                        id: Date.now().toString(),
+                        userId: currentUser.id,
+                        username: currentUser.username,
+                        content,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    posts[postIndex].comments.push(comment);
+                    Storage.set('posts', posts);
+                    
+                    // Add comment to user's comments
+                    currentUser.comments.push(comment.id);
+                    User.update(currentUser);
+                    
+                    return comment;
+                }
+            },
+            
+            // Get post by ID
+            getById: (postId) => {
+                const posts = Post.getAll();
+                return posts.find(p => p.id === postId);
+            }
+        };
+
+        // UI Management
+        const UI = {
+            // Show page
+            showPage: (pageId) => {
+                document.querySelectorAll('[id$="-page"]').forEach(page => {
+                    page.classList.add('hidden');
+                });
+                document.getElementById(pageId).classList.remove('hidden');
+            },
+            
+            // Update navigation based on login status
+            updateNavigation: () => {
+                const currentUser = User.current();
+                const loginBtn = document.getElementById('login-btn');
+                const logoutBtn = document.getElementById('logout-btn');
+                const profileBtn = document.getElementById('profile-btn');
+                
+                if (currentUser) {
+                    loginBtn.classList.add('hidden');
+                    logoutBtn.classList.remove('hidden');
+                    profileBtn.classList.remove('hidden');
+                } else {
+                    loginBtn.classList.remove('hidden');
+                    logoutBtn.classList.add('hidden');
+                    profileBtn.classList.add('hidden');
+                }
+            },
+            
+            // Render posts
+            renderPosts: (posts = null) => {
+                const container = document.getElementById('posts-container');
+                const postsToRender = posts || Post.getAll();
+                
+                if (postsToRender.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                            <i class="fas fa-newspaper text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-700">Belum ada postingan</h3>
+                            <p class="text-gray-500 mt-2">Jadilah yang pertama membagikan sesuatu!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = postsToRender.map(post => {
+                    const isLiked = post.likes.includes(User.current()?.id);
+                    const likeText = isLiked ? 'text-red-500' : 'text-gray-500';
+                    const likeIcon = isLiked ? 'fas' : 'far';
+                    
+                    return `
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden post" data-post-id="${post.id}">
+                            <div class="p-4 border-b border-gray-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <i class="fas fa-user text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">${post.username}</h4>
+                                        <p class="text-sm text-gray-500">${new Date(post.timestamp).toLocaleString('id-ID')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <p class="text-gray-700 mb-4">${post.content}</p>
+                                ${post.image ? `<img src="${post.image}" alt="Post image" class="w-full rounded-lg mb-4 post-image">` : ''}
+                                <div class="flex justify-between text-gray-500">
+                                    <button class="like-btn flex items-center space-x-1 ${likeText} hover:text-red-500 transition">
+                                        <i class="${likeIcon} fa-heart"></i>
+                                        <span>${post.likes.length}</span>
+                                    </button>
+                                    <button class="comment-btn flex items-center space-x-1 text-gray-500 hover:text-blue-500 transition">
+                                        <i class="far fa-comment"></i>
+                                        <span>${post.comments.length}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+            
+            // Render active users
+            renderActiveUsers: () => {
+                const container = document.getElementById('active-users');
+                const users = Storage.get('users') || [];
+                const posts = Post.getAll();
+                
+                // Calculate user activity (post count)
+                const userActivity = users.map(user => {
+                    const userPosts = posts.filter(post => post.userId === user.id);
+                    return {
+                        ...user,
+                        postCount: userPosts.length
+                    };
+                }).sort((a, b) => b.postCount - a.postCount).slice(0, 5);
+                
+                if (userActivity.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center">Belum ada anggota</p>';
+                    return;
+                }
+                
+                container.innerHTML = userActivity.map(user => `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-user text-blue-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-800">${user.username}</p>
+                            <p class="text-sm text-gray-500">${user.postCount} postingan</p>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            // Render user profile
+            renderProfile: () => {
+                const currentUser = User.current();
+                if (!currentUser) return;
+                
+                document.getElementById('profile-username').textContent = currentUser.username;
+                document.getElementById('profile-join-date').textContent = `Bergabung ${new Date(currentUser.joinDate).toLocaleDateString('id-ID')}`;
+                
+                const userPosts = Post.getByUser(currentUser.id);
+                document.getElementById('profile-posts-count').textContent = userPosts.length;
+                
+                // Calculate total likes received
+                const totalLikes = userPosts.reduce((total, post) => total + post.likes.length, 0);
+                document.getElementById('profile-likes-count').textContent = totalLikes;
+                
+                document.getElementById('profile-comments-count').textContent = currentUser.comments.length;
+                
+                // Render user posts
+                const container = document.getElementById('user-posts-container');
+                if (userPosts.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-newspaper text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">Belum ada postingan</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = userPosts.map(post => `
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <p class="text-gray-700 mb-2">${post.content}</p>
+                            ${post.image ? `<img src="${post.image}" alt="Post image" class="w-full rounded-lg mb-2 post-image">` : ''}
+                            <div class="flex justify-between text-sm text-gray-500">
+                                <span>${new Date(post.timestamp).toLocaleString('id-ID')}</span>
+                                <div class="flex space-x-4">
+                                    <span><i class="fas fa-heart text-red-500 mr-1"></i> ${post.likes.length}</span>
+                                    <span><i class="fas fa-comment text-blue-500 mr-1"></i> ${post.comments.length}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            },
+            
+            // Render comments for a post
+            renderComments: (postId) => {
+                const post = Post.getById(postId);
+                if (!post) return;
+                
+                const container = document.getElementById('comments-container');
+                if (post.comments.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-comments text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">Belum ada komentar</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = post.comments.map(comment => `
+                        <div class="mb-4 last:mb-0">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user text-blue-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="bg-gray-100 rounded-lg p-3">
+                                        <div class="flex justify-between">
+                                            <h4 class="font-bold text-gray-800 text-sm">${comment.username}</h4>
+                                            <p class="text-xs text-gray-500">${new Date(comment.timestamp).toLocaleString('id-ID')}</p>
+                                        </div>
+                                        <p class="text-gray-700 mt-1">${comment.content}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Set current post ID for comment form
+                document.getElementById('comment-form').dataset.postId = postId;
+            },
+            
+            // Show comments modal
+            showCommentsModal: (postId) => {
+                UI.renderComments(postId);
+                document.getElementById('comments-modal').classList.remove('hidden');
+            },
+            
+            // Hide comments modal
+            hideCommentsModal: () => {
+                document.getElementById('comments-modal').classList.add('hidden');
+            }
+        };
+
+        // Image handling
+        const ImageHandler = {
+            // Convert image file to base64
+            toBase64: (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            }
+        };
+
+        // Initialize app
+        const initApp = () => {
+            // Initialize storage
+            Storage.init();
+            
+            // Check if user is logged in
+            const currentUser = User.current();
+            if (currentUser) {
+                UI.showPage('home-page');
+                UI.renderPosts();
+                UI.renderActiveUsers();
+            } else {
+                UI.showPage('login-page');
+            }
+            
+            UI.updateNavigation();
+            
+            // Event listeners
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value.trim();
+                
+                if (username) {
+                    User.login(username);
+                    UI.showPage('home-page');
+                    UI.renderPosts();
+                    UI.renderActiveUsers();
+                    UI.updateNavigation();
+                    document.getElementById('username').value = '';
+                }
+            });
+            
+            document.getElementById('post-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const content = document.getElementById('post-content').value.trim();
+                const imageFile = document.getElementById('post-image').files[0];
+                
+                if (content || imageFile) {
+                    let imageBase64 = null;
+                    
+                    if (imageFile) {
+                        try {
+                            imageBase64 = await ImageHandler.toBase64(imageFile);
+                        } catch (error) {
+                            console.error('Error converting image:', error);
+                        }
+                    }
+                    
+                    Post.create(content, imageBase64);
+                    UI.renderPosts();
+                    UI.renderActiveUsers();
+                    
+                    // Reset form
+                    document.getElementById('post-form').reset();
+                }
+            });
+            
+            document.getElementById('comment-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const content = document.getElementById('comment-input').value.trim();
+                const postId = e.target.dataset.postId;
+                
+                if (content && postId) {
+                    Post.addComment(postId, content);
+                    UI.renderComments(postId);
+                    UI.renderPosts(); // Refresh posts to update comment count
+                    document.getElementById('comment-input').value = '';
+                }
+            });
+            
+            // Navigation event listeners
+            document.getElementById('home-btn').addEventListener('click', () => {
+                UI.showPage('home-page');
+                UI.renderPosts();
+                UI.renderActiveUsers();
+            });
+            
+            document.getElementById('profile-btn').addEventListener('click', () => {
+                UI.showPage('profile-page');
+                UI.renderProfile();
+            });
+            
+            document.getElementById('login-btn').addEventListener('click', () => {
+                UI.showPage('login-page');
+            });
+            
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                User.logout();
+                UI.showPage('login-page');
+                UI.updateNavigation();
+            });
+            
+            document.getElementById('close-comments-modal').addEventListener('click', () => {
+                UI.hideCommentsModal();
+            });
+            
+            // Event delegation for dynamic elements
+            document.addEventListener('click', (e) => {
+                // Like button
+                if (e.target.closest('.like-btn')) {
+                    const postElement = e.target.closest('.post');
+                    const postId = postElement.dataset.postId;
+                    
+                    if (User.current()) {
+                        Post.like(postId);
+                        UI.renderPosts();
+                    } else {
+                        UI.showPage('login-page');
+                    }
+                }
+                
+                // Comment button
+                if (e.target.closest('.comment-btn')) {
+                    const postElement = e.target.closest('.post');
+                    const postId = postElement.dataset.postId;
+                    
+                    if (User.current()) {
+                        UI.showCommentsModal(postId);
+                    } else {
+                        UI.showPage('login-page');
+                    }
+                }
+            });
+        };
+
+        // Start the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
